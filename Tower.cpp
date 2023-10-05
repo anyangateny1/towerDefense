@@ -1,17 +1,13 @@
 #include "Tower.h"
 
-// constructor that does nothing
-
-Tower::Tower() {}
-
 // init variables and tower
 
-Tower::Tower(int attackrange, int damage, float attackSpeed) : attackRange(attackRange), damage(damage), attackSpeed(attackSpeed) {}
+Tower::Tower(int id, int x, int y, int health, int damage, int attackRange, float attackSpeed) : Tower::gameObject(id, x, y, health, damage), attackRange(attackRange), attackSpeed(attackSpeed) {}
 
 // attacks the enemy
 
 void Tower::attack(Enemy* opponent) {
-    
+  if (attackRange > 1) {
     opponent->takeDamage(damage);
-
+    }
 }

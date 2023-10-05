@@ -1,8 +1,9 @@
 #ifndef TOWER_H
 #define TOWER_H
+#include "gameObject.h"
 #include "Enemy.h"
 
-class Tower {
+class Tower : public gameObject {
 
     private:
 
@@ -10,23 +11,18 @@ class Tower {
 
     int attackRange;
 
-    int damage;
-
     float attackSpeed;
-    
+
     public:
 
     // constructor
 
-    Tower();
-    
-    // constructor
-
-    Tower(int attackrange, int damage, float attackSpeed);
+    Tower(int id, int x, int y, int health, int damage, int attackRange, float attackSpeed);
 
     // attacks the enemy, using pointers to reduce enemys hp by damage.
 
     void attack(Enemy* opponent);
+    
 
 
 
