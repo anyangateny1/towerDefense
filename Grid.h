@@ -5,14 +5,19 @@
 class Grid {
 
     protected:
+    // constant integer for the colums and rows
 
     const int columns;
     const int rows;
 
-    public:
-
     std::vector<std::vector<gameObject*> > gameMap;
 
+    public:
+
+    // vector of pointers that will host the gameObjects
+
+
+    // this code block makes the vector 2d, and adds more object pointers relevant to the columns and rows
 
     Grid() : columns(7), rows(5){
 
@@ -29,6 +34,8 @@ class Grid {
         }
     }
 
+// simple function to print the current map.
+
 void printGrid() {
 
         for (int i = 0; i < rows; i++){
@@ -44,6 +51,8 @@ void printGrid() {
         }       
 
     }
+
+// allows the object to be added.
 
 void addObject(gameObject* object) {
 
