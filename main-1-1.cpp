@@ -19,6 +19,10 @@ Anyang.setHealth(2);
 
 Map.printGrid();
 
+std::cout << std::endl;
+
+std::cout << std::endl;
+
 Anyang.attack(&John);
 
 Map.printGrid();

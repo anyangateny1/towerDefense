@@ -6,31 +6,69 @@
 class Enemy : public gameObject {
 
 private:
-
-int speed;
-
+    int speed;
 
 public:
+    // basic constructor
+    Enemy(int id, int x, int y, int health, int damage, int speed) : Enemy::gameObject(id, x, y, health, damage), speed(speed) {}
 
-Enemy(int id, int x, int y, int health, int damage, int speed) : Enemy::gameObject(id, x, y, health, damage), speed(speed) {}
+    //move enemy
+    virtual void move(int newX, int newY){
+        x = newX;
+        y = newY;
+    }
 
-void takeDamage(int damage) {
+    //check if alive
+    virtual bool isAlive(){
+        return health > 0;
+    }
 
-    health -= damage;
+    // basic function that makes the object take the damage of a towers HP
 
-    if (health < 1) {
+    virtual void takeDamage(int damage) {
 
-        std::cout << "Dead!" << std::endl;
+        health -= damage;
+
+        if (health < 1) {
+
+            std::cout << "Dead!" << std::endl;
+
+        }
 
     }
 
-}
 
-void 
-// int getSpeed() {
+    // getters and setters
 
-//     return speed;
+    virtual int getSpeed() {
+        return speed;
+    }
 
-// }
+    //get coords
+    virtual int getX(){
+        return x;
+    }
+
+    virtual int getY(){
+        return y;
+    }
+
+    virtual int getID(){
+        return id;
+    }
+
+    virtual void setHealth(int hp){
+        health = hp;
+    }
+
+    virtual void setSpeed(int speed){
+        this->speed = speed;
+    }
+
+    virtual void setDamage(int dmg){
+        damage = dmg;
+    }
+    
+
 };
 #endif
