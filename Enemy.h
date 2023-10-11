@@ -26,10 +26,11 @@ void takeDamage(int damage) {
 
 }
 
-int getSpeed() {
+void 
+// int getSpeed() {
 
-    return speed;
+//     return speed;
 
-}
+// }
 };
 #endif
