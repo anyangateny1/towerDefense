@@ -5,7 +5,7 @@
 
 class Enemy : public gameObject {
 
-private:
+protected:
     int speed;
 
 public:
@@ -68,7 +68,7 @@ public:
     virtual void setDamage(int dmg){
         damage = dmg;
     }
-    
+
 
 };
 #endif
