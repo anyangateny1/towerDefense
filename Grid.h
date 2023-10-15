@@ -1,6 +1,7 @@
 #ifndef GRID_H
 #define GRID_H
 #include "gameObject.h"
+#include <algorithm>
 
 class Grid {
 
@@ -10,16 +11,26 @@ class Grid {
     const int columns;
     const int rows;
 
-    std::vector<std::vector<gameObject*> > gameMap;
-
-    public:
-
+    // vector to keep track of IDs inputted.
+    
+    std::vector<int> idVect;
+    
     // vector of pointers that will host the gameObjects
+
+    
+    // count
+
+    int count;
+
+
+    public:   
+
+    std::vector<std::vector<gameObject*> > gameMap;
 
 
     // this code block makes the vector 2d, and adds more object pointers relevant to the columns and rows
 
-    Grid() : columns(7), rows(5){
+    Grid() : columns(7), rows(5), count(0){
 
         for (int i = 0; i < rows; i++){
 
@@ -59,9 +70,20 @@ void addObject(gameObject* object) {
     int x = object->getX();
     int y = object->getY();
 
-    this->gameMap[x][y] = object;
+    // this also keeps tracks of IDs and pushbacks into previously named vector
 
-    std::cout << "Object added!" << std::endl;
+    if (idVect.empty() || !(!idVect.empty() && std::find(idVect.begin(), idVect.end(), object->checkID()) != idVect.end())){
+
+        this->gameMap[x][y] = object;
+
+        std::cout << "Object added!" << std::endl;
+
+        idVect.push_back(object->checkID());
+
+    } else {
+
+        std::cout << "ID already in use! Please try again with a different ID." << std::endl;
+    }
 
     };
 
@@ -71,6 +93,17 @@ void setHealth(int x, int y, int health){
 
 }
 
+void updateGrid(){
+
+    // shifts all the enemy 1 place to the right.
+    
+    for (int i = 6; i > 0; i--) {
+        
+        gameMap[2][i] = gameMap[2][i-1];
+        gameMap[2][i]->setY(i-1);
+
+    }  
+}
 
 };
 #endif
