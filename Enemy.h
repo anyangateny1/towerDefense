@@ -10,6 +10,9 @@ protected:
 
 public:
     // basic constructor
+
+    Enemy() {}
+    
     Enemy(int id, int x, int y, int health, int damage, int speed) : Enemy::gameObject(id, x, y, health, damage), speed(speed) {}
 
     //move enemy
@@ -19,8 +22,8 @@ public:
     }
 
     //check if alive
-    virtual bool isAlive(){
-        return health > 0;
+     bool isAlive(){
+        return (health > 0);
     }
 
     // basic function that makes the object take the damage of a towers HP
@@ -28,12 +31,6 @@ public:
     virtual void takeDamage(int damage) {
 
         health -= damage;
-
-        if (health < 1) {
-
-            std::cout << "Dead!" << std::endl;
-
-        }
 
     }
 

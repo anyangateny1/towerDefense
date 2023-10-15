@@ -27,6 +27,8 @@ class gameObject {
     
     int getY() { return y; }
 
+    void setY(int y) { this->y = y; }
+
     int getHealth() { return health; }
 
     int getDamage() { return damage; }
@@ -36,5 +38,18 @@ class gameObject {
         this->health = health;
 
     }
+
+    int checkID(){
+
+        return id;
+
+    }
+
+    void move() {
+
+        this->x = x + 1;
+
+    }
+
 };
 #endif
