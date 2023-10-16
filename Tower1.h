@@ -22,6 +22,31 @@ class Tower1 : public Tower {
         bool isX1_5() {
             return x1_5;
         }
+    
+    //......
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 }
 #endif
