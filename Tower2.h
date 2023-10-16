@@ -3,6 +3,50 @@
 #include "Tower.h"
 
 class Tower2 : public Tower {
+    //......
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 }
 #endif
