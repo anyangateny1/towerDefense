@@ -34,8 +34,8 @@ class Tower : public gameObject {
 
     bool inRange(Enemy* opponent) {
         return attackRange * attackRange >=
-         (x - opponent->getX(opponent)) * (x - opponent->getX(opponent)) 
-         + (y - opponent->getY(opponent)) * (y - opponent->getY(opponent)) ? true : false;
+         (x - opponent->getX()) * (x - opponent->getX()) 
+         + (y - opponent->getY()) * (y - opponent->getY()) ? true : false;
     }
 
 };
