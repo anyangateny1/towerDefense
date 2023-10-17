@@ -30,5 +30,13 @@ class Tower : public gameObject {
     }
     }
 
+    // Checks whether enemies in range or not
+
+    bool inRange(Enemy* opponent) {
+        return attackRange * attackRange >=
+         (x - opponent->getX(opponent)) * (x - opponent->getX(opponent)) 
+         + (y - opponent->getY(opponent)) * (y - opponent->getY(opponent)) ? true : false;
+    }
+
 };
 #endif
