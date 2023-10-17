@@ -11,8 +11,8 @@ class Tower1 : public Tower {
     public:
         Tower1(int id, int x, int y, int health, int damage, int attackRange, float attackSpeed):
         Tower(id, x, y, health, damage, attackRange, attackSpeed) {
-            splash = !(rand() % 5);
-            x1_5 = splash ? !(rand() % 5) : false;
+            splash = false;
+            x1_5 = false;
         }
 
         bool isSplash() {
