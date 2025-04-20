@@ -1,109 +1,194 @@
 #ifndef GRID_H
 #define GRID_H
-#include "gameObject.h"
+#include "Enemy.h"
+#include "GameObject.h"
+#include <SFML/Graphics.hpp>
 #include <algorithm>
+#include <iostream>
+#include <memory>
+#include <vector>
 
 class Grid {
-
-    protected:
-    // constant integer for the colums and rows
-
-    const int columns;
+  private:
     const int rows;
+    const int columns;
+    std::vector<int> objectIds;
+    std::vector<std::vector<GameObject*>> grid;
+    sf::RectangleShape cellOutline;
+    const float cellSize;
+    std::vector<std::pair<int, int>> path; // Path for enemies to follow
 
-    // vector to keep track of IDs inputted.
-    
-    std::vector<int> idVect;
-    
-    // vector of pointers that will host the gameObjects
+    int toZeroIndex(int oneIndexed) const { return oneIndexed - 1; }
 
-    
-    // count
+    // Convert from 0-indexed to 1-indexed coordinates
+    int toOneIndex(int zeroIndexed) const { return zeroIndexed + 1; }
 
-    int count;
+    bool isValidPosition(int x, int y) const {
+        // Convert to 0-indexed for internal check
+        int x0 = toZeroIndex(x);
+        int y0 = toZeroIndex(y);
+        return x0 >= 0 && x0 < rows && y0 >= 0 && y0 < columns;
+    }
 
+  public:
+    Grid() : rows(5), columns(7), cellSize(80.0f) {
+        // Initialize grid with nullptr
+        grid.resize(rows, std::vector<GameObject*>(columns, nullptr));
 
-    public:   
+        cellOutline.setSize(sf::Vector2f(cellSize, cellSize));
+        cellOutline.setFillColor(sf::Color::Transparent);
+        cellOutline.setOutlineColor(sf::Color(100, 100, 100, 150));
+        cellOutline.setOutlineThickness(1.0f);
 
-    std::vector<std::vector<gameObject*> > gameMap;
+        path = {{3, 1}, {3, 2}, {2, 2}, {2, 3}, {3, 3}, {3, 4},
+                {4, 4}, {4, 5}, {3, 5}, {3, 6}, {2, 6}, {2, 7}};
+    }
 
+    int getRows() const { return rows; }
+    int getColumns() const { return columns; }
 
-    // this code block makes the vector 2d, and adds more object pointers relevant to the columns and rows
-
-    Grid() : columns(7), rows(5), count(0){
-
-        for (int i = 0; i < rows; i++){
-
-        gameMap.push_back(std::vector<gameObject*>());
-        
-            for (int j = 0; j < columns; j++){
-
-                gameMap[i].push_back(new gameObject());
-
+    void printGrid() const {
+        for (int i = 1; i <= rows; i++) {
+            for (int j = 1; j <= columns; j++) {
+                if (grid[toZeroIndex(i)][toZeroIndex(j)] &&
+                    grid[toZeroIndex(i)][toZeroIndex(j)]->isAlive()) {
+                    std::cout << grid[toZeroIndex(i)][toZeroIndex(j)]->getHealth();
+                } else {
+                    std::cout << "0";
+                }
             }
-
+            std::cout << std::endl;
         }
     }
 
-// simple function to print the current map.
+    void addObject(GameObject* object) {
+        if (!object)
+            return;
 
-void printGrid() {
+        // Get 1-indexed coordinates from object
+        int x = object->getX();
+        int y = object->getY();
 
-        for (int i = 0; i < rows; i++){
+        // Check if coordinates are valid
+        if (!isValidPosition(x, y)) {
+            std::cerr << "Invalid position (" << x << "," << y << ")!" << std::endl;
+            return;
+        }
 
-            for (int j = 0; j < columns; j++){
+        int x0 = toZeroIndex(x);
+        int y0 = toZeroIndex(y);
 
-                std::cout << gameMap[i][j]->getHealth();
-            
+        // Check if id is already used
+        int id = object->getId();
+        if (std::find(objectIds.begin(), objectIds.end(), id) != objectIds.end()) {
+            std::cerr << "ID " << id << " already in use!" << std::endl;
+            return;
+        }
+
+        // Remove any existing object at this position
+        if (grid[x0][y0]) {
+            removeObject(grid[x0][y0]);
+        }
+
+        grid[x0][y0] = object;
+        objectIds.push_back(id);
+    }
+
+    GameObject* getObjectAt(int x, int y) const {
+        if (!isValidPosition(x, y))
+            return nullptr;
+        return grid[toZeroIndex(x)][toZeroIndex(y)];
+    }
+
+    void updateGrid() {
+        std::vector<std::vector<GameObject*>> newGrid(rows,
+                                                      std::vector<GameObject*>(columns, nullptr));
+
+        for (int i = 1; i <= rows; i++) {
+            for (int j = 1; j <= columns; j++) {
+                int i0 = toZeroIndex(i);
+                int j0 = toZeroIndex(j);
+                if (grid[i0][j0] && !dynamic_cast<Enemy*>(grid[i0][j0])) {
+                    newGrid[i0][j0] = grid[i0][j0];
+                }
             }
+        }
 
-         std::cout << std::endl;
+        // Then move each enemy along the path
+        for (int i = 1; i <= rows; i++) {
+            for (int j = 1; j <= columns; j++) {
+                int i0 = toZeroIndex(i);
+                int j0 = toZeroIndex(j);
+                if (!grid[i0][j0])
+                    continue;
 
-        }       
+                Enemy* enemy = dynamic_cast<Enemy*>(grid[i0][j0]);
+                if (!enemy || !enemy->isAlive())
+                    continue;
 
+                // Find current position in path
+                auto currentPos = std::make_pair(i, j);
+                auto it = std::find(path.begin(), path.end(), currentPos);
+
+                if (it != path.end() && std::next(it) != path.end()) {
+                    // Get next position in path
+                    auto nextPos = *std::next(it);
+
+                    // Move enemy to next position (using 1-indexed coordinates)
+                    enemy->move(nextPos.first, nextPos.second);
+                    newGrid[toZeroIndex(nextPos.first)][toZeroIndex(nextPos.second)] = enemy;
+                }
+            }
+        }
+
+        // Update the grid
+        grid = std::move(newGrid);
     }
 
-// allows the object to be added.
+    const std::vector<std::pair<int, int>>& getPath() const { return path; }
 
-void addObject(gameObject* object) {
+    void draw(sf::RenderWindow& window) {
+        if (!window.isOpen())
+            return;
 
-    int x = object->getX();
-    int y = object->getY();
+        // Draw grid cells
+        for (int i = 1; i <= rows; i++) {
+            for (int j = 1; j <= columns; j++) {
+                int i0 = toZeroIndex(i);
+                int j0 = toZeroIndex(j);
+                cellOutline.setPosition(j0 * cellSize + 100, i0 * cellSize + 100);
 
-    // this also keeps tracks of IDs and pushbacks into previously named vector
+                if (std::find(path.begin(), path.end(), std::make_pair(i, j)) != path.end()) {
+                    cellOutline.setFillColor(sf::Color(0, 0, 0, 160));
+                } else {
+                    cellOutline.setFillColor(sf::Color(0, 0, 0, 110));
+                }
 
-    if (idVect.empty() || !(!idVect.empty() && std::find(idVect.begin(), idVect.end(), object->checkID()) != idVect.end())){
-
-        this->gameMap[x][y] = object;
-
-        std::cout << "Object added!" << std::endl;
-
-        idVect.push_back(object->checkID());
-
-    } else {
-
-        std::cout << "ID already in use! Please try again with a different ID." << std::endl;
+                window.draw(cellOutline);
+            }
+        }
     }
 
-    };
+    void removeObject(GameObject* object) {
+        if (!object)
+            return;
 
-void setHealth(int x, int y, int health){
+        for (int i = 1; i <= rows; i++) {
+            for (int j = 1; j <= columns; j++) {
+                int i0 = toZeroIndex(i);
+                int j0 = toZeroIndex(j);
+                if (grid[i0][j0] == object) {
+                    grid[i0][j0] = nullptr;
 
-    gameMap[x][y]->setHealth(health);
-
-}
-
-void updateGrid(){
-
-    // shifts all the enemy 1 place to the right.
-    
-    for (int i = 6; i > 0; i--) {
-        
-        gameMap[2][i] = gameMap[2][i-1];
-        gameMap[2][i]->setY(i-1);
-
-    }  
-}
-
+                    // Remove the object's ID from objectIds
+                    auto it = std::find(objectIds.begin(), objectIds.end(), object->getId());
+                    if (it != objectIds.end()) {
+                        objectIds.erase(it);
+                    }
+                    return;
+                }
+            }
+        }
+    }
 };
 #endif
