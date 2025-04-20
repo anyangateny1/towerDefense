@@ -23,20 +23,20 @@ Game::~Game() {
 
 void Game::loadResources() {
     // Load font
-    if (!font.loadFromFile("arial.ttf")) {
+    if (!font.loadFromFile("assets/fonts/arial.ttf")) {
         std::cerr << "Failed to load font!" << std::endl;
     }
     
     // Load textures
-    if (!towerTexture.loadFromFile("tower.png")) {
+    if (!towerTexture.loadFromFile("assets/textures/tower.png")) {
         std::cerr << "Failed to load tower texture!" << std::endl;
     }
     
-    if (!enemyTexture.loadFromFile("enemy.png")) {
+    if (!enemyTexture.loadFromFile("assets/textures/enemy.png")) {
         std::cerr << "Failed to load enemy texture!" << std::endl;
     }
     
-    if (!backgroundTexture.loadFromFile("background.png")) {
+    if (!backgroundTexture.loadFromFile("assets/textures/background.png")) {
         std::cerr << "Failed to load background texture!" << std::endl;
     }
     
